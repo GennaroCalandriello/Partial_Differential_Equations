@@ -7,14 +7,14 @@ import module.graph as graph
 KdV equation: u_t=-u*u_x-delta*u_xxx
 The PDE is converted, through Fourier analysis, in a ODE and integrated at each time step by a 4-th order Runge-Kutta method '''
 
-graphic='static'
+graphic='animate'
 delta=0.022**2
 TB=1./np.pi
 
 N=500
 dt=1e-5*TB
 INTV=1000
-time_steps=int(0.2e6)
+time_steps=int(1.5e6)
 L=2*np.pi
 #Initial condition
 x=np.linspace(-L, L , N)
@@ -62,7 +62,13 @@ for nt in range(time_steps):
 if graphic=='animate':   
     graph.animate_plot(L, x, v_final)
 if graphic=='static':
-    graph.static_plot(v_final, x)
+    v_static=np.zeros((round(time_steps/(INTV*10)), len(x)))
+    c=0
+    for i in range(len(v_final)):
+        if i%10==0:
+            v_static[c]=v_final[i]
+            c+=1
+    graph.static_plot(v_static, x)
 
 
 

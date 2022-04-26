@@ -27,10 +27,11 @@ def animate_plot(L, x, u):
         return line,
 
     ani=FuncAnimation(fig, animate, init_func=init, frames=200, interval=20, blit=True)
-    fig.suptitle('Exp wave plot', fontsize=14)
+    fig.suptitle('Cos wave plot', fontsize=18)
+    ax.set_xlabel('x', fontsize=14)
+    ax.set_ylabel('u(x, t)', fontsize=14)
     plt.show()
-    # writervideo = animation.FFMpegWriter(fps=60)
-    ani.save('Korteweg_de_Vries.gif')
+    ani.save('OneDrive/Desktop/Github_projects/repositories/Partial_Differential_Equations/Korteweg-de_Vries/Korteweg_de_Vries.gif')
     
 
 def static_plot(u, x):
