@@ -5,14 +5,14 @@ import matplotlib.pyplot as plt
 L = 2*np.pi
 dt = 2e-3
 D = 0.5
-cos=True #parameter that regulates the presence of a periodic drift
+cos=False #parameter that regulates the presence of a periodic drift
 
 @njit(fastmath=True, cache=True)
 def initial_state_(N, p, x, y, L):
     '''Construct the initial state'''
     a = 1
-    for i in range(N):
-        for j in range(N):
+    for i in range(1, N):
+        for j in range(1, N):
             p[i, j] = np.exp(-((x[i]-0.3*L)**2+(y[j]-0.3*L)
                              ** 2)/(2*a))  # shift di 0.3*L
     return p
@@ -41,7 +41,7 @@ def g(x, y):
 def f(x, y, t):
     '''Drift func on the y first derivative for Van der Pol FP'''
     w = 0.3
-    a0 = 0.1
+    a0 = 0.1 #parameter that determine the nonlinearity of the system
     a = a0*(np.cos(w*t))
     if cos: return (x-a*y*(1-x**2))
     else: return (x-a0*y*(1-x**2))

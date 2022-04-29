@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 time_steps = 50000
 L = 2*np.pi
-INTV = 200
+INTV = 100
 dt = 2e-3
 D = 0.5
 
@@ -31,7 +31,7 @@ def alternate_direction_implicit(N):
 
     for t in range(time_steps):
         # BC
-        p = func.boundary_conditions('periodic', N, p)
+        p = func.boundary_conditions('absorbing', N, p)
         tt = t*dt
 
         # implicito su x ed esplicito su y
@@ -72,12 +72,12 @@ def max_value_in_a_square(p_total, x, y):
 
 
 if __name__ == '__main__':
-    execute = True
-    plotting = True
+    execute = False
+    plotting = False
     vtk = False #it is necessary ParaView to read this kind of dataset
-    static_plot=True
+    static_plot=False
 
-    N_array = [25, 400]
+    N_array = [25, 50, 100, 200, 400, 600, 700]
 
     if execute:
         max_array = np.zeros((len(N_array), round(time_steps/INTV)))
@@ -90,9 +90,9 @@ if __name__ == '__main__':
             max_array[c] = max_value_in_a_square(p_total, x, y)
             c += 1
             
-            if plotting:
+            if (plotting==True and N==max(N_array)):
                 # graph.animate_matplotlib(x, y, p_total)
-                if (vtk==True and N==400):
+                if (vtk==True and N==max(N_array)):
                     print(f'Writing .vtk file for N = {N}')
                     # path to save file in .vtk format for ParaView
                     path_save = f'OneDrive/Desktop/Github_projects/Van_der_Pol_Fokker_Planck/VdP_ADI/VdP_N_{N}'   #change the path!
@@ -101,9 +101,9 @@ if __name__ == '__main__':
                     for w in range(len(p_total)):
                         graph.writeVtk(w, p_total[w], N, dx, path_save)
                 
-                if (static_plot==True and N==400):
+                if (static_plot==True and N==max(N_array)):
                     for w in range(len(p_total)):
-                        if (w*INTV)%300==0: #each time which the static plot is executed and saved
+                        if ((w*INTV)%10==0 and w*INTV<=300): #each time which the static plot is executed and saved
                             graph.static_plot(x, y, p_total[w], w*INTV)
         np.savetxt(f'max_try.txt', max_array)
 
@@ -114,9 +114,9 @@ if __name__ == '__main__':
         x_arr=x_arr*INTV
         plt.plot(x_arr,
                  max_arr[m], label=f'N = {N_array[m]}')
-        plt.xlabel('t', fontsize=12)
-        plt.ylabel(r'$u_{max}$', fontsize=12)
-        plt.title(r'Convergenza per $\Delta_x, \Delta_y \to 0 $')
-        plt.legend()
+        plt.xlabel('t', fontsize=17)
+        plt.ylabel(r'$u_{max}$', fontsize=17)
+        plt.title(r'Comportamento per $\Delta_x, \Delta_y \to 0 $', fontsize=20)
+        plt.legend(prop={"size":10})
     plt.show()
 
