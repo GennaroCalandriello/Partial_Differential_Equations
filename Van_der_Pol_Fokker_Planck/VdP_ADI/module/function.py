@@ -3,7 +3,6 @@ from numba import njit, float64, int32
 import matplotlib.pyplot as plt
 
 L = 2*np.pi
-dt = 2e-3
 D = 0.5
 cos=False #parameter that regulates the presence of a periodic drift
 
@@ -18,7 +17,25 @@ def initial_state_(N, p, x, y, L):
     return p
 
 @njit(fastmath=True, cache=True)
+def parameters_var_dt(N, dt):
+    '''Construct parameters and initial condition's array for each N, dt'''
+    x = np.linspace(-L, L, N)
+    y = x
+    p = np.zeros((N, N))
+    dx = (x[1]-x[0])
+    dy = dx
+    betax = 0.5*dt/dx
+    betay = 0.5*dt/dy
+    alphax = dt*D/dx**2
+    alphay = dt*D/dy**2
+    p = initial_state_(N, p, x, y, L)
+    return (x, y, dx, p, betax, betay, alphax, alphay)
+
+
+
+@njit(fastmath=True, cache=True)
 def parameters(N):
+    dt=2e-3 #fixed time step
     '''Construct parameters and initial condition's array for each N'''
     x = np.linspace(-L, L, N)
     y = x
@@ -89,7 +106,7 @@ def solve_matrix(n, lower_diagonal, main_diagonal, upper_diagonal, solution_vect
     return result #restituisce la stessa soluzione che con linalg.solve
 
 @njit(fastmath=True, cache=True)
-def implicit_x_explicit_y(N, tt, p: np.array, p_new: np.array,  x: np.array, y: np.array, betax, betay, alphax, alphay):
+def implicit_x_explicit_y(N, tt, dt, p: np.array, p_new: np.array,  x: np.array, y: np.array, betax, betay, alphax, alphay):
     '''Execute the ADI implicitly on x and explicitly on y'''
     main = np.ones(N)
     up_diag = np.ones(N)
@@ -110,7 +127,7 @@ def implicit_x_explicit_y(N, tt, p: np.array, p_new: np.array,  x: np.array, y: 
     return p_new
 
 @njit(fastmath=True, cache=True)
-def implicit_y_explicit_x(N, tt, p: np.array, p_new: np.array, x: np.array, y: np.array, betax, betay, alphax, alphay):
+def implicit_y_explicit_x(N, tt, dt, p: np.array, p_new: np.array, x: np.array, y: np.array, betax, betay, alphax, alphay):
     '''Execute the ADI implicitly on y and explicitly on x'''
     main = np.ones(N)*(1+alphay)
     up_diag = np.ones(N)
