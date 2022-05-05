@@ -7,10 +7,14 @@ import time
 import shutil
 import os
 
+'''!!!Warning!!!! This explicit scheme is not accurate like ADI'''
+
+'''This program integrates the Fokker Planck of a Van der Pol by explicit O(dt^2) scheme. We reccomend to use ADI that is more accurate'''
+
 time_steps=50000
 dt=2e-3
 D=0.5
-INTV=200
+INTV=50
 
 
 @njit(float64[:,:,:](int32), fastmath=True, cache=True)
@@ -39,25 +43,6 @@ def calcolo(N):
 
     return p_total
 
-def max_value_in_a_square(p_total, x, y):
-    '''Find the max value in a square of a mesh grid. It is an experiment to verify the convergence of the method without
-    an analytical solution'''
-    max_list = []
-    i_list = []
-    j_list = []
-    for i in range(N):
-        if (x[i] >= 0.6 or x[i] <= 1.):
-            i_list.append(i)
-    for j in range(N):
-        if (y[j] >= 0.6 or y[j] <= 1.):
-            j_list.append(j)
-    i_max = max(i_list)
-    i_min = min(i_list)
-    j_max = max(j_list)
-    j_min = min(j_list)
-    for t in range(len(p_total)):
-        max_list.append(np.amax(p_total[t, i_min:i_max, j_min:j_max]))
-    return(np.array(max_list))
 
 if __name__=="__main__":
     execute=True
@@ -74,7 +59,6 @@ if __name__=="__main__":
             time.sleep(2)
             x, y, dx, _, _, _, _, _=func.parameters(N)
             p_total=calcolo(N)
-            max_array[c] = max_value_in_a_square(p_total, x, y)
             c+=1
 
             if (static_plot==True and N==max(N_array)):
@@ -93,20 +77,5 @@ if __name__=="__main__":
                 os.makedirs(path_vtk)
                 for t in range(len(p_total)):
                     graph.writeVtk(t, p_total[t], N, dx, path_vtk)
-
-            np.savetxt(f'max_try.txt', max_array)
-        
-        max_arr = np.loadtxt(f'max_try.txt')
-
-        for m in range(len(max_arr)):
-            x_arr=np.array(range(round(time_steps/INTV)))
-            x_arr=x_arr*INTV
-            plt.plot(x_arr,
-                    max_arr[m], label=f'N = {N_array[m]}')
-            plt.xlabel('t', fontsize=12)
-            plt.ylabel(r'$u_{max}$', fontsize=12)
-            plt.title(r'Convergenza per $\Delta_x, \Delta_y \to 0 $')
-            plt.legend()
-        plt.show()
 
 
