@@ -18,7 +18,7 @@ def initial_state_(N, p, x, y, L):
             if form == 'gaussian':
                 p[i, j] = np.exp(-((x[i])**2+(y[j])**2)/(2*a))
             if form == 'wave':
-                p[i, j] = (np.sin(0.3*(x[i]**2+y[j]**2)))
+                p[i, j] =np.abs((np.sin(0.3*(x[i]**2+y[j]**2))))
     return p
 
 @njit(fastmath=True, cache=True)
