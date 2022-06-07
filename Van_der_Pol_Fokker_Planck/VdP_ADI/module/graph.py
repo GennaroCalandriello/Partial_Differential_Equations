@@ -52,6 +52,6 @@ def static_plot(x, y, u, t):
     ax.set_xlabel('x', fontsize=12)
     ax.set_ylabel('y', fontsize=12)
     ax.set_zlabel('u(x, y, t)', fontsize=12)
-    fig.savefig(f'OneDrive/Desktop/Github_projects/Van_der_Pol_Fokker_Planck/VdP_ADI/plots/random/random_IC_{t}') #change the path
-    # plt.show()
+    # fig.savefig(f'OneDrive/Desktop/Github_projects/Van_der_Pol_Fokker_Planck/VdP_ADI/plots/random/random_IC_{t}') #change the path
+    plt.show()
 
